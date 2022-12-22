@@ -1,0 +1,87 @@
+Sub Main;
+Var
+  str: String;
+  file_path: String;
+  is_directory_exists: Variant;
+  pu:PythonUtils;
+  some, row:IPythonList;
+  dick: IPythonDictionary;
+  Result, Key, v: variant;
+  Arr: Array;
+  c, i:Integer;
+
+  MB: IMetabase;
+  DSInst: IDatasetInstance;
+  Cache: ICachedDataset;
+  fID: IDatasetInstanceField;
+Begin
+  file_path  := "C:/Users/ArturKadyrgulov/Documents/work/FORSAIT/python/test_dir";
+  Python.InvokeModule("download_excel", "download_excel", file_path);
+   
+  Debug.Write("Файлы скачались");
+   
+  MB := MetabaseClass.Active;
+  DSInst := MB.ItemById("TABLE_TEST").Open(Null) As IDatasetInstance;
+  Cache := DSInst.OpenCached;
+  
+
+  Result := Python.InvokeModule("parse", "parse", file_path);
+  some := New PythonList.Create(Result);
+  some := some.Item(0) As IPythonList;
+  c := some.ToArray.Length;
+  Debug.WriteLine(c);
+  For i := 0 To c-1 Do
+    row := some.Item(i);
+    Arr := row.ToArray;    
+    //For Each v In Arr Do
+    Cache.Append;
+    While Not Cache.Eof Do
+      Cache.Edit;
+      fID := Cache.Fields.FindById("DATA");
+      If fID.Value = Null Then
+        fID.Value := Arr[0];
+      End If;    
+      fID := Cache.Fields.FindById("ORE");
+      If fID.Value = Null Then
+        fID.Value := Arr[1];
+      End If;    
+      fID := Cache.Fields.FindById("GEN");
+      If fID.Value = Null Then
+        fID.Value := Arr[2];
+      End If;    
+      fID := Cache.Fields.FindById("GEN_NAME");
+      If fID.Value = Null Then
+        fID.Value := Arr[3];
+      End If;    
+      fID := Cache.Fields.FindById("MOD_NODE");
+      If fID.Value = Null Then
+        fID.Value := Arr[4];
+      End If;    
+      fID := Cache.Fields.FindById("NODE_NAME");
+      If fID.Value = Null Then
+        fID.Value := Arr[5];
+      End If;    
+      fID := Cache.Fields.FindById("TYPE");
+      If fID.Value = Null Then
+        fID.Value := Arr[6];
+      End If;    
+      fID := Cache.Fields.FindById("NAME");
+      If fID.Value = Null Then
+        fID.Value := Arr[7];
+      End If;    
+      fID := Cache.Fields.FindById("PERIOD");
+      If fID.Value = Null Then
+        fID.Value := Arr[8];
+      End If;    
+      fID := Cache.Fields.FindById("POK");
+      If fID.Value = Null Then
+        fID.Value := Arr[9];
+      End If;        
+      Cache.Post;
+      Cache.Next;
+    End While;
+    //End For;
+
+  End For;
+
+End Sub Main;
