@@ -22,8 +22,9 @@ def download_excel(directory_for_download: str):
         directory_for_download = directory_for_download + '/' + today_y_m_d
         os.mkdir(directory_for_download)
 
-    regions = ['sib', 'eur']
-
+    #regions = ['sib', 'eur']
+    regions = ['eur']
+    
     #Адресс сайта где лежат excel без указания региона. Их два sib и eur
     URL_TEMPLATE = "https://www.atsenergo.ru/nreport?access=public&rname=carana_sell_units&rdate=" + today_y_m_d + "&region="
     #Адресс сайта для для скачивания excel
@@ -61,12 +62,14 @@ def download_excel(directory_for_download: str):
             file_fill_path = os.path.join(directory_for_download, file_name)
             with open(file_fill_path, 'wb') as f:
                 f.write(r.content)
-                #if index == 1:
-                #     break
+                if index == 1:
+                     break
 
         print(f"Количество записей {len(table_with_href_and_names)} для {reg} региона")
 
         
 
-directory_for_download = "/Users/kadyrgulovartur/python_learn/test_folder"
-download_excel(directory_for_download)
+#directory_for_download = "/Users/kadyrgulovartur/python_learn/test_folder"
+#download_excel(directory_for_download)
+#data = parse.parse(directory_for_download)
+#print(data)
