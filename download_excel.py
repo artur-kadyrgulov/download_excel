@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup as bs
 from datetime import date
 import warnings
 import os
+import parse
 
 def download_excel(directory_for_download: str):
 
@@ -22,13 +23,13 @@ def download_excel(directory_for_download: str):
         directory_for_download = directory_for_download + '/' + today_y_m_d
         os.mkdir(directory_for_download)
 
-    #regions = ['sib', 'eur']
     regions = ['eur']
     
     #Адресс сайта где лежат excel без указания региона. Их два sib и eur
     URL_TEMPLATE = "https://www.atsenergo.ru/nreport?access=public&rname=carana_sell_units&rdate=" + today_y_m_d + "&region="
     #Адресс сайта для для скачивания excel
     site_for_download_excel = 'https://www.atsenergo.ru/nreport'
+    filename_pattern = 'KUZBAS'
 
     for reg in regions:
         URL = URL_TEMPLATE + reg
@@ -56,20 +57,21 @@ def download_excel(directory_for_download: str):
             site_url_for_get_data = site_for_download_excel + row[0]
             #print(site_url_for_get_data)
             r = requests.get(site_url_for_get_data, verify=False)
-            #file_name = str(index) + '.xls'
-            #file_name = row[1] + '.xls'
-            file_name = row[1] + '.xls'
-            file_fill_path = os.path.join(directory_for_download, file_name)
-            with open(file_fill_path, 'wb') as f:
-                f.write(r.content)
-                if index == 1:
-                     break
+            file_name = row[1]
+            #Для примера беру два значения и и чтобы был точно Кузбас
+            if index <= 1 or file_name.find(filename_pattern) != -1:
+                print(file_name)
+                file_fill_path = os.path.join(directory_for_download, file_name)
+                with open(file_fill_path, 'wb') as f:
+                    f.write(r.content)
+                #if index == 1:
+                     #break
 
         print(f"Количество записей {len(table_with_href_and_names)} для {reg} региона")
 
         
 
-#directory_for_download = "/Users/kadyrgulovartur/python_learn/test_folder"
-#download_excel(directory_for_download)
-#data = parse.parse(directory_for_download)
-#print(data)
+directory_for_download = "/Users/kadyrgulovartur/python_learn/test_folder"
+download_excel(directory_for_download)
+data = parse.parse(directory_for_download)
+print(data)
